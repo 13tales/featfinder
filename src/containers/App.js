@@ -28,7 +28,7 @@ class App extends Component {
     return (
       <div>
         <TabNav />
-        <Grid>
+        <Grid style={{ minHeight: 100 + "%" }}>
           <Row>
             <h3>Feat search</h3>
           </Row>
@@ -36,14 +36,14 @@ class App extends Component {
             handleInput={this.props.handleInput}
             input={this.props.input}
           />
-          <Row>
-            <Col sm={6}>
+          <Row style={{ display: "flex", flexWrap: "wrap" }}>
+            <Col sm={6} style={{ display: "flex", flexDirection: "column" }}>
               <ResultList
                 results={this.props.results}
                 handleSelect={this.props.selectFeat}
               />
             </Col>
-            <Col sm={6}>
+            <Col sm={6} style={{ display: "flex", flexDirection: "column" }}>
               <FeatDetail feat={this.props.selected} />
             </Col>
           </Row>
