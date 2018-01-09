@@ -26,24 +26,37 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ height: "100%" }}>
         <TabNav />
-        <Grid style={{ minHeight: 100 + "%" }}>
+        <Grid style={{ height: "85%" }}>
           <Row>
             <h3>Feat search</h3>
+            <SearchBox
+              handleInput={this.props.handleInput}
+              input={this.props.input}
+            />
           </Row>
-          <SearchBox
-            handleInput={this.props.handleInput}
-            input={this.props.input}
-          />
-          <Row style={{ display: "flex", flexWrap: "wrap" }}>
-            <Col sm={6} style={{ display: "flex", flexDirection: "column" }}>
+          <Row style={{ height: "100%" }}>
+            <Col
+              sm={6}
+              style={{
+                height: "100%",
+                overflow: "scroll"
+              }}
+            >
               <ResultList
                 results={this.props.results}
                 handleSelect={this.props.selectFeat}
+                selected={this.props.selected}
               />
             </Col>
-            <Col sm={6} style={{ display: "flex", flexDirection: "column" }}>
+            <Col
+              sm={6}
+              style={{
+                height: "100%",
+                overflow: "scroll"
+              }}
+            >
               <FeatDetail feat={this.props.selected} />
             </Col>
           </Row>

@@ -62,7 +62,7 @@ export function getSuccessorFeats(featId) {
 
     const results = await db.run(
       `match (f :Feat)<-[:REQUIRES*..]-(o :Feat) where f.id = $id
-       return o.name as name`,
+       return distinct o.name as name`,
       { id: featId }
     );
 

@@ -20,7 +20,8 @@ export function selected(
     name: "none selected",
     description: "n/a",
     benefit: "n/a",
-    successors: []
+    successors: [],
+    id: null
   },
   action
 ) {
