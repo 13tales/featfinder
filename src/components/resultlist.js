@@ -41,9 +41,9 @@ const ResultList = ({ results, handleSelect, selected }) => {
   });
 
   return (
-    <Panel>
+    <Panel style={{ height: "100%" }}>
       <Panel.Heading>Results</Panel.Heading>
-      <Panel.Body>
+      <Panel.Body style={{ height: "100%", overflow: "scroll" }}>
         <ListGroup>{items}</ListGroup>
       </Panel.Body>
     </Panel>
