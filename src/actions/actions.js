@@ -1,4 +1,5 @@
 import * as neo4j from "neo4j-driver/lib/browser/neo4j-web.min.js";
+import * as api from "../api/api.js";
 
 export const INPUT_TEXT = "INPUT_TEXT";
 export const CONNECT_DB = "CONNECT_DB";
@@ -6,11 +7,20 @@ export const PENDING = "PENDING";
 export const INIT_DB = "INIT_DB";
 export const SELECT_FEAT = "SELECT_FEAT ";
 export const SUCCESSOR_FEATS = "SUCCESSOR_FEATS ";
+export const FETCH_FEATS = "FETCH_FEATS ";
+export const SEARCH_OPTIONS = "SEARCH_OPTIONS ";
 
 export function pending(active) {
   return {
     type: PENDING,
     active
+  };
+}
+
+export function initApp() {
+  return dispatch => {
+    dispatch(initDB());
+    dispatch(getFeats());
   };
 }
 
@@ -36,22 +46,22 @@ export function initDB() {
   };
 }
 
-export function inputText(content) {
+export function getFeats() {
   return async (dispatch, getState) => {
     dispatch(pending(true));
 
     const db = getState().dbConnected.session;
 
-    const results = await db.run(
-      `match (f :Feat) where f.name =~ $regex
-       return f order by f.name asc limit 50`,
-      { regex: `(?i).*${content}.*` }
-    );
+    let results = await api.fetchAll(db);
 
     dispatch(pending(false));
 
-    return dispatch({ type: INPUT_TEXT, results, content });
+    return dispatch({ type: FETCH_FEATS, results });
   };
+}
+
+export function inputText(content) {
+  return { type: INPUT_TEXT, content };
 }
 
 export function getSuccessorFeats(featId) {
@@ -60,11 +70,7 @@ export function getSuccessorFeats(featId) {
 
     const db = getState().dbConnected.session;
 
-    const results = await db.run(
-      `match (f :Feat)<-[:REQUIRES*..]-(o :Feat) where f.id = $id
-       return distinct o.name as name`,
-      { id: featId }
-    );
+    const results = await api.getSuccessors(db, featId);
 
     dispatch(pending(false));
 

@@ -1,18 +1,22 @@
 import {
   INPUT_TEXT,
   SELECT_FEAT,
-  SUCCESSOR_FEATS
+  SUCCESSOR_FEATS,
+  FETCH_FEATS
 } from "../actions/actions.js";
+import { Map } from "immutable";
 
-export function search(state = { input: "", results: [] }, action) {
-  if (action.type === INPUT_TEXT) {
-    return {
-      input: action.content,
-      results: action.results.records.map(r => r.toObject().f.properties)
-    };
-  }
+export function search(state = "", action) {
+  return action.type === INPUT_TEXT ? action.content : state;
+}
 
-  return state;
+export function feats(state = Map(), action) {
+  console.log(action);
+  return action.type === FETCH_FEATS
+    ? action.results.records
+        .map(r => r.toObject().f.properties)
+        .reduce((out, f) => out.set(f.id, f), Map())
+    : state;
 }
 
 export function selected(

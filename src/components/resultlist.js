@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import { ListGroup, ListGroupItem, Panel, Label } from "react-bootstrap";
+import { ListGroup, ListGroupItem, Label } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
+import { Map } from "immutable";
 
-const Item = ({ feat, handleSelect, selected }) => {
+const Item = ({ feat, history, selected }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
   let labelColor = "";
   switch (feat.type) {
@@ -20,7 +22,7 @@ const Item = ({ feat, handleSelect, selected }) => {
     <ListGroupItem
       active={selected.id === feat.id}
       key={feat.id}
-      onClick={() => handleSelect(feat)}
+      onClick={() => history.push("/feat/" + feat.id)}
     >
       <h4>
         {feat.name + " "}
@@ -35,19 +37,18 @@ const Item = ({ feat, handleSelect, selected }) => {
   );
 };
 
-const ResultList = ({ results, handleSelect, selected }) => {
-  let items = results.map(r => {
-    return <Item feat={r} handleSelect={handleSelect} selected={selected} />;
-  });
+const ResultList = withRouter(({ results, history, selected, input }) => {
+  const re = new RegExp(input, "i");
+  const items = results
+    .valueSeq()
+    .filter(f => f.name.match(re))
+    .toArray()
+    .slice(0, 101)
+    .map(r => (
+      <Item key={r.id} feat={r} history={history} selected={selected} />
+    ));
 
-  return (
-    <Panel style={{ height: "100%" }}>
-      <Panel.Heading>Results</Panel.Heading>
-      <Panel.Body style={{ height: "100%", overflow: "scroll" }}>
-        <ListGroup>{items}</ListGroup>
-      </Panel.Body>
-    </Panel>
-  );
-};
+  return <ListGroup>{items}</ListGroup>;
+});
 
 export { ResultList };

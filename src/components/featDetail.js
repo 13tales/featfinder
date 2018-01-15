@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { Route } from "react-router-dom";
+import { getSuccessorFeats } from "../actions/actions.js";
+import { connect } from "react-redux";
 
 const Successors = ({ successors }) => {
   return (
@@ -9,21 +12,45 @@ const Successors = ({ successors }) => {
   );
 };
 
-const FeatDetail = props => {
+const FeatDetail = ({ match, feats }) => {
+  console.log(feats);
+  const feat = feats.get(match.params.id) || {
+    name: "",
+    prerequisites: "",
+    description: "",
+    benefit: "",
+    successors: []
+  };
   return (
     <div>
-      <h2>{props.feat.name}</h2>
+      <h2>{feat.name}</h2>
       <h3>Requires</h3>
-      <p>{props.feat.prerequisites || "None"}</p>
+      <p>{feat.prerequisites || "None"}</p>
       <h3>Description</h3>
-      <p>{props.feat.description}</p>
+      <p>{feat.description}</p>
       <h3>Benefit</h3>
-      <p>{props.feat.benefit}</p>
-      {props.feat.successors.length !== 0 && (
-        <Successors successors={props.feat.successors} />
+      <p>{feat.benefit}</p>
+      {feat.successors !== undefined && (
+        <Successors successors={feat.successors} />
       )}
     </div>
   );
 };
 
-export { FeatDetail };
+const mapStateToProps = state => {
+  return {
+    feats: state.feats
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getSuccessors: id => dispatch(getSuccessorFeats(id))
+  };
+};
+
+const ConnectedFeatDetail = connect(mapStateToProps, mapDispatchToProps)(
+  FeatDetail
+);
+
+export default ConnectedFeatDetail;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   Grid,
   Row,
@@ -8,10 +8,11 @@ import {
   Form,
   FormGroup,
   InputGroup,
-  Glyphicon
+  Glyphicon,
+  Button
 } from "react-bootstrap";
 
-let SearchBox = ({ handleInput, input }) => {
+let SearchBox = ({ handleInput, input, toggleOptions }) => {
   return (
     <Form horizontal>
       <FormGroup>
@@ -29,6 +30,11 @@ let SearchBox = ({ handleInput, input }) => {
               return handleInput(e.target.value);
             }}
           />
+          <InputGroup.Button>
+            <Button onClick={toggleOptions}>
+              <Glyphicon glyph="option-horizontal" />
+            </Button>
+          </InputGroup.Button>
         </InputGroup>
       </FormGroup>
     </Form>

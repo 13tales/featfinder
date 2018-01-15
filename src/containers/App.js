@@ -13,15 +13,22 @@ import {
   ListGroupItem
 } from "react-bootstrap";
 import { ResultList } from "../components/resultlist.js";
-import { FeatDetail } from "../components/featDetail.js";
+import { default as FeatDetail } from "../components/featDetail.js";
 import { SearchBox } from "../components/searchbox.js";
 import { TabNav } from "../components/tabbed_nav.js";
+import { SearchOptions } from "../components/searchOptions.js";
 import { connect } from "react-redux";
-import { inputText, initDB, selectFeat } from "../actions/actions.js";
+import {
+  inputText,
+  initApp,
+  selectFeat,
+  SEARCH_OPTIONS
+} from "../actions/actions.js";
+import { Route } from "react-router-dom";
 
 class App extends Component {
   componentDidMount() {
-    this.props.initDB();
+    this.props.initApp();
   }
 
   render() {
@@ -30,11 +37,17 @@ class App extends Component {
         <TabNav />
         <Grid style={{ height: "85%" }}>
           <Row>
-            <h3>Feat search</h3>
-            <SearchBox
-              handleInput={this.props.handleInput}
-              input={this.props.input}
-            />
+            <h3>Search</h3>
+            <Col sm={12}>
+              <SearchBox
+                handleInput={this.props.handleInput}
+                input={this.props.input}
+                toggleOptions={this.props.toggleSearchOptions}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <SearchOptions show={this.props.ui.showSearchOptions} />
           </Row>
           <Row style={{ height: "100%" }}>
             <Col
@@ -48,6 +61,7 @@ class App extends Component {
                 results={this.props.results}
                 handleSelect={this.props.selectFeat}
                 selected={this.props.selected}
+                input={this.props.input}
               />
             </Col>
             <Col
@@ -57,7 +71,11 @@ class App extends Component {
                 overflow: "scroll"
               }}
             >
-              <FeatDetail feat={this.props.selected} />
+              <Route
+                path="/feat/:id"
+                feats={this.props.results}
+                component={FeatDetail}
+              />
             </Col>
           </Row>
         </Grid>
@@ -69,9 +87,10 @@ class App extends Component {
 // This function takes the state, and returns the props that we need to pass to components.
 const mapStateToProps = state => {
   return {
-    input: state.search.input,
-    results: state.search.results,
-    selected: state.selected
+    input: state.search,
+    results: state.feats,
+    selected: state.selected,
+    ui: state.uiState
   };
 };
 
@@ -81,10 +100,11 @@ const mapDispatchToProps = dispatch => {
     handleInput: input => {
       dispatch(inputText(input));
     },
-    initDB: () => {
-      dispatch(initDB());
+    initApp: () => {
+      dispatch(initApp());
     },
-    selectFeat: f => dispatch(selectFeat(f))
+    selectFeat: f => dispatch(selectFeat(f)),
+    toggleSearchOptions: () => dispatch({ type: SEARCH_OPTIONS })
   };
 };
 
