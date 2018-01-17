@@ -1,14 +1,26 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
 import { getSuccessorFeats } from "../actions/actions.js";
 import { connect } from "react-redux";
+import { removeSpecialChars } from "../utils/string.js";
 
 const Successors = ({ successors, getSuccessorFeats }) => {
-  console.log(successors);
   return (
     <div>
       <h3>Required by</h3>
-      <ul>{successors.map(s => <li key={s}>{s}</li>)}</ul>
+      {successors.length !== 0 ? (
+        <ul>
+          {successors.map(s => (
+            <li key={s}>
+              <Link to={`/feat/${removeSpecialChars(s)}`}>{s}</Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>
+          <em>None</em>
+        </p>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { ListGroup, ListGroupItem, Label } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 import { Map } from "immutable";
+import { removeSpecialChars } from "../utils/string.js";
 
 const Item = ({ feat, history, selected, handleSelect }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
@@ -23,8 +24,7 @@ const Item = ({ feat, history, selected, handleSelect }) => {
       active={selected.id === feat.id}
       key={feat.id}
       onClick={() => {
-        history.push("/feat/" + feat.id);
-        console.log(handleSelect);
+        history.push("/feat/" + feat.key);
         handleSelect(feat);
       }}
     >
