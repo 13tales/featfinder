@@ -21,20 +21,11 @@ export function feats(state = Map(), action) {
 
 export function selected(
   state = {
-    name: "none selected",
-    description: "n/a",
-    benefit: "n/a",
-    successors: [],
-    id: null
+    successors: []
   },
   action
 ) {
-  switch (action.type) {
-    case SELECT_FEAT:
-      return { ...action.feat, successors: [] };
-    case SUCCESSOR_FEATS:
-      return { ...state, successors: action.successors };
-    default:
-      return state;
-  }
+  return action.type === SUCCESSOR_FEATS
+    ? { successors: action.successors }
+    : state;
 }
