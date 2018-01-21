@@ -1,16 +1,18 @@
 import { combineReducers } from "redux";
-import { search, selected, feats } from "./feats.js";
+import { search, successorFeats, feats } from "./feats.js";
 import { actionPending } from "./async.js";
 import { dbConnected } from "./dbConnected.js";
 import { uiState } from "./ui.js";
+import { routerReducer } from "react-router-redux";
 
 const reducer = combineReducers({
   actionPending,
   search,
   dbConnected,
-  selected,
+  successorFeats,
   feats,
-  uiState
+  uiState,
+  router: routerReducer
 });
 
 export default reducer;

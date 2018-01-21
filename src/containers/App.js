@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent as Component } from "react";
 import {
   Grid,
   Row,
@@ -21,10 +21,12 @@ import { connect } from "react-redux";
 import {
   inputText,
   initApp,
-  selectFeat,
-  SEARCH_OPTIONS
+  SEARCH_OPTIONS,
+  selectFeat
 } from "../actions/actions.js";
 import { Route } from "react-router-dom";
+import { push } from "react-router-redux";
+import { PageSpinner } from "../components/spinner.js";
 
 class App extends Component {
   componentDidMount() {
@@ -35,50 +37,57 @@ class App extends Component {
     return (
       <div style={{ height: "100%" }}>
         <TabNav />
-        <Grid style={{ height: "85%" }}>
-          <Row>
-            <h3>Search</h3>
-            <Col sm={12}>
-              <SearchBox
-                handleInput={this.props.handleInput}
-                input={this.props.input}
-                toggleOptions={this.props.toggleSearchOptions}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <SearchOptions show={this.props.ui.showSearchOptions} />
-          </Row>
-          <Row style={{ height: "100%" }}>
-            <Col
-              sm={6}
-              style={{
-                height: "100%",
-                overflow: "scroll"
-              }}
-            >
-              <ResultList
-                results={this.props.results}
-                handleSelect={this.props.selectFeat}
-                selected={this.props.selected}
-                input={this.props.input}
-              />
-            </Col>
-            <Col
-              sm={6}
-              style={{
-                height: "100%",
-                overflow: "scroll"
-              }}
-            >
-              <Route
-                path="/feat/:id"
-                feats={this.props.results}
-                component={FeatDetail}
-              />
-            </Col>
-          </Row>
-        </Grid>
+        {this.props.pending.feats === false ? (
+          <Grid style={{ height: "85%" }}>
+            <Row>
+              <h3>Search</h3>
+              <Col sm={12}>
+                <SearchBox
+                  handleInput={this.props.handleInput}
+                  input={this.props.input}
+                  toggleOptions={this.props.toggleSearchOptions}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <SearchOptions show={this.props.ui.showSearchOptions} />
+            </Row>
+            <Row style={{ height: "100%" }}>
+              <Col
+                sm={6}
+                style={{
+                  height: "100%",
+                  overflow: "scroll"
+                }}
+              >
+                {this.props.pending.feats === true ? (
+                  <PageSpinner size="6x" />
+                ) : (
+                  <ResultList
+                    results={this.props.results}
+                    input={this.props.input}
+                    handleClick={this.props.handleFeatClick}
+                  />
+                )}
+              </Col>
+              <Col
+                sm={6}
+                style={{
+                  height: "100%",
+                  overflow: "scroll"
+                }}
+              >
+                <Route
+                  path="/feat/:name"
+                  feats={this.props.results}
+                  component={FeatDetail}
+                />
+              </Col>
+            </Row>
+          </Grid>
+        ) : (
+          <PageSpinner size="6x" />
+        )}
       </div>
     );
   }
@@ -89,8 +98,8 @@ const mapStateToProps = state => {
   return {
     input: state.search,
     results: state.feats,
-    selected: state.selected,
-    ui: state.uiState
+    ui: state.uiState,
+    pending: state.actionPending
   };
 };
 
@@ -103,8 +112,8 @@ const mapDispatchToProps = dispatch => {
     initApp: () => {
       dispatch(initApp());
     },
-    selectFeat: f => dispatch(selectFeat(f)),
-    toggleSearchOptions: () => dispatch({ type: SEARCH_OPTIONS })
+    toggleSearchOptions: () => dispatch({ type: SEARCH_OPTIONS }),
+    handleFeatClick: key => dispatch(selectFeat(key))
   };
 };
 

@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import { Map } from "immutable";
 import { removeSpecialChars } from "../utils/string.js";
 
-const Item = ({ feat, history, selected, handleSelect }) => {
+const Item = ({ feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
   let labelColor = "";
   switch (feat.type) {
@@ -21,11 +21,9 @@ const Item = ({ feat, history, selected, handleSelect }) => {
 
   return (
     <ListGroupItem
-      active={selected.id === feat.id}
       key={feat.id}
       onClick={() => {
-        history.push("/feat/" + feat.key);
-        handleSelect(feat);
+        handleClick({ key: feat.key, id: feat.id });
       }}
     >
       <h4>
@@ -41,26 +39,16 @@ const Item = ({ feat, history, selected, handleSelect }) => {
   );
 };
 
-const ResultList = withRouter(
-  ({ results, history, selected, input, handleSelect }) => {
-    const re = new RegExp(input, "i");
-    const items = results
-      .valueSeq()
-      .filter(f => f.name.match(re))
-      .toArray()
-      .slice(0, 101)
-      .map(r => (
-        <Item
-          key={r.id}
-          feat={r}
-          history={history}
-          selected={selected}
-          handleSelect={handleSelect}
-        />
-      ));
+const ResultList = ({ results, input, handleClick }) => {
+  const re = new RegExp(input, "i");
+  const items = results
+    .valueSeq()
+    .filter(f => f.name.match(re))
+    .toArray()
+    .slice(0, 50)
+    .map(r => <Item key={r.id} feat={r} handleClick={handleClick} />);
 
-    return <ListGroup>{items}</ListGroup>;
-  }
-);
+  return <ListGroup>{items}</ListGroup>;
+};
 
 export { ResultList };

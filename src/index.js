@@ -9,18 +9,34 @@ import reducer from "./reducers/index.js";
 import thunkMiddleware from "redux-thunk";
 import promiseMiddleware from "redux-promise";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import createHistory from "history/createBrowserHistory";
+import {
+  ConnectedRouter,
+  routerReducer,
+  routerMiddleware,
+  push
+} from "react-router-redux";
+
+const history = createHistory();
+const connectedRouterMiddleware = routerMiddleware(history);
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   reducer,
-  composeEnhancers(applyMiddleware(thunkMiddleware, promiseMiddleware))
+  composeEnhancers(
+    applyMiddleware(
+      thunkMiddleware,
+      promiseMiddleware,
+      connectedRouterMiddleware
+    )
+  )
 );
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router>
+    <ConnectedRouter history={history}>
       <Route path="/" component={App} />
-    </Router>
+    </ConnectedRouter>
   </Provider>,
   document.getElementById("root")
 );

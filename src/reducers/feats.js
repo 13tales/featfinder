@@ -23,13 +23,14 @@ export function feats(state = Map(), action) {
     : state;
 }
 
-export function selected(
-  state = {
-    successors: []
-  },
-  action
-) {
-  return action.type === SUCCESSOR_FEATS
-    ? { successors: action.successors }
-    : state;
+export function successorFeats(state = [], action) {
+  switch (action.type) {
+    case SUCCESSOR_FEATS:
+      return action.successors;
+    case "@@router/LOCATION_CHANGE":
+      console.log("Wiping successors");
+      return [];
+    default:
+      return state;
+  }
 }
