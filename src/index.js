@@ -16,6 +16,7 @@ import {
   routerMiddleware,
   push
 } from "react-router-redux";
+import "semantic-ui-css/semantic.min.css";
 
 const history = createHistory();
 const connectedRouterMiddleware = routerMiddleware(history);

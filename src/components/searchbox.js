@@ -1,43 +1,21 @@
 import React from "react";
-import {
-  Grid,
-  Row,
-  Col,
-  FormControl,
-  ControlLabel,
-  Form,
-  FormGroup,
-  InputGroup,
-  Glyphicon,
-  Button
-} from "react-bootstrap";
+import { Input, Menu } from "semantic-ui-react";
 
 let SearchBox = ({ handleInput, input, toggleOptions }) => {
   return (
-    <Form horizontal>
-      <FormGroup>
-        <InputGroup>
-          <InputGroup.Addon>
-            <Glyphicon glyph="search" />
-          </InputGroup.Addon>
-          <FormControl
-            id="search"
-            name="search"
-            type="text"
-            placeholder="Input goes here"
-            value={input}
-            onChange={e => {
-              return handleInput(e.target.value);
-            }}
-          />
-          <InputGroup.Button>
-            <Button onClick={toggleOptions}>
-              <Glyphicon glyph="option-horizontal" />
-            </Button>
-          </InputGroup.Button>
-        </InputGroup>
-      </FormGroup>
-    </Form>
+    <Menu>
+      <Menu.Item header>FeatFinder</Menu.Item>
+      <Menu.Item>
+        <Input
+          icon="search"
+          placeholder="Search..."
+          value={input}
+          onChange={e => {
+            return handleInput(e.target.value);
+          }}
+        />
+      </Menu.Item>
+    </Menu>
   );
 };
 

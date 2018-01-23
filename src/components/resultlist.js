@@ -1,54 +1,66 @@
 import React, { Component } from "react";
-import { ListGroup, ListGroupItem, Label } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 import { Map } from "immutable";
 import { removeSpecialChars } from "../utils/string.js";
+import { Segment, Label, List } from "semantic-ui-react";
 
-const Item = ({ feat, history, handleClick }) => {
+const Item = ({ active, feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
   let labelColor = "";
   switch (feat.type) {
     case "Combat":
-      labelColor = "danger";
+      labelColor = "red";
       break;
     case "General":
-      labelColor = "primary";
+      labelColor = "teal";
       break;
     default:
-      labelColor = "info";
+      labelColor = "blue";
       break;
   }
 
   return (
-    <ListGroupItem
+    <List.Item
       key={feat.id}
       onClick={() => {
         handleClick({ key: feat.key, id: feat.id });
       }}
+      active={active}
     >
-      <h4>
+      <List.Header>
         {feat.name + " "}
-        <Label bsStyle={labelColor} style={{ marginLeft: "1ex" }}>
+        <Label color={labelColor} style={{ marginLeft: "1ex" }}>
           {feat.type}
         </Label>
-      </h4>
-      <p>
+      </List.Header>
+      <List.Description>
         <em>{benefitSnippet}</em>
-      </p>
-    </ListGroupItem>
+      </List.Description>
+    </List.Item>
   );
 };
 
-const ResultList = ({ results, input, handleClick }) => {
+const ResultList = ({ results, selected, input, handleClick }) => {
   const re = new RegExp(input, "i");
   const items = results
     .valueSeq()
     .filter(f => f.name.match(re))
     .toArray()
-    .slice(0, 50)
-    .map(r => <Item key={r.id} feat={r} handleClick={handleClick} />);
+    .slice(0, 101)
+    .map(r => (
+      <Item
+        active={selected && selected === r.key}
+        key={r.id}
+        feat={r}
+        handleClick={handleClick}
+      />
+    ));
 
-  return <ListGroup>{items}</ListGroup>;
+  return (
+    <List divided selection>
+      {items}
+    </List>
+  );
 };
 
 export { ResultList };

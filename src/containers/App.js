@@ -1,18 +1,21 @@
 import React, { PureComponent as Component } from "react";
-import {
-  Grid,
-  Row,
-  Nav,
-  NavItem,
-  Col,
-  FormControl,
-  ControlLabel,
-  Form,
-  FormGroup,
-  ListGroup,
-  ListGroupItem
-} from "react-bootstrap";
+/* import {
+  *   Breadcrumb,
+  *   Grid,
+  *   Grid.Row,
+  *   Nav,
+  *   NavItem,
+  *   Grid.Column,
+  *   FormControl,
+  *   ControlLabel,
+  *   Form,
+  *   FormGroup,
+  *   ListGroup,
+  *   ListGroupItem
+  * } from "react-bootstrap";
+*/
 import { ResultList } from "../components/resultlist.js";
+import { Segment, Container, Grid, Menu } from "semantic-ui-react";
 import { default as FeatDetail } from "../components/featDetail.js";
 import { SearchBox } from "../components/searchbox.js";
 import { TabNav } from "../components/tabbed_nav.js";
@@ -35,60 +38,51 @@ class App extends Component {
 
   render() {
     return (
-      <div style={{ height: "100%" }}>
-        <TabNav />
+      <Container style={{ height: "100%", maxHeight: "100%" }}>
         {this.props.pending.feats === false ? (
-          <Grid style={{ height: "85%" }}>
-            <Row>
-              <h3>Search</h3>
-              <Col sm={12}>
+          <Grid style={{ height: "95%" }}>
+            <Grid.Row />
+            <Grid.Row columns={2} style={{ height: "100%" }}>
+              <Grid.Column width={6} style={{ height: "100%" }}>
                 <SearchBox
                   handleInput={this.props.handleInput}
                   input={this.props.input}
                   toggleOptions={this.props.toggleSearchOptions}
                 />
-              </Col>
-            </Row>
-            <Row>
-              <SearchOptions show={this.props.ui.showSearchOptions} />
-            </Row>
-            <Row style={{ height: "100%" }}>
-              <Col
-                sm={6}
-                style={{
-                  height: "100%",
-                  overflow: "scroll"
-                }}
-              >
                 {this.props.pending.feats === true ? (
                   <PageSpinner size="6x" />
                 ) : (
-                  <ResultList
-                    results={this.props.results}
-                    input={this.props.input}
-                    handleClick={this.props.handleFeatClick}
-                  />
+                  <Segment style={{ height: "100%", overflowY: "scroll" }}>
+                    <Route
+                      path="/feat/:name"
+                      children={({ match }) => (
+                        <ResultList
+                          selected={match && match.params.name}
+                          results={this.props.results}
+                          input={this.props.input}
+                          handleClick={this.props.handleFeatClick}
+                        />
+                      )}
+                    />
+                  </Segment>
                 )}
-              </Col>
-              <Col
-                sm={6}
-                style={{
-                  height: "100%",
-                  overflow: "scroll"
-                }}
+              </Grid.Column>
+              <Grid.Column
+                width={10}
+                style={{ height: "100%", overflowY: "scroll" }}
               >
                 <Route
                   path="/feat/:name"
                   feats={this.props.results}
                   component={FeatDetail}
                 />
-              </Col>
-            </Row>
+              </Grid.Column>
+            </Grid.Row>
           </Grid>
         ) : (
           <PageSpinner size="6x" />
         )}
-      </div>
+      </Container>
     );
   }
 }

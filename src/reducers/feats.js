@@ -28,7 +28,6 @@ export function successorFeats(state = [], action) {
     case SUCCESSOR_FEATS:
       return action.successors;
     case "@@router/LOCATION_CHANGE":
-      console.log("Wiping successors");
       return [];
     default:
       return state;
