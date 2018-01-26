@@ -11,6 +11,7 @@ export const SUCCESSOR_FEATS = "SUCCESSOR_FEATS ";
 export const FETCH_FEATS = "FETCH_FEATS ";
 export const SEARCH_OPTIONS = "SEARCH_OPTIONS ";
 export const SUCCESSORS_DIRTY = "SUCCESSORS_DIRTY";
+export const SIDEBAR = "SIDEBAR";
 
 export function pending(dataElement) {
   return {

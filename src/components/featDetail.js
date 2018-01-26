@@ -1,6 +1,7 @@
 import React, { PureComponent as Component } from "react";
+import { Rail, Sticky, Button, Container, Segment } from "semantic-ui-react";
 import { Route, Link, withRouter } from "react-router-dom";
-import { getSuccessorFeats } from "../actions/actions.js";
+import { SIDEBAR, getSuccessorFeats } from "../actions/actions.js";
 import { connect } from "react-redux";
 import { removeSpecialChars } from "../utils/string.js";
 import { push } from "react-router-redux";
@@ -31,6 +32,8 @@ const Successors = ({ pending, successors }) => {
 };
 
 class FeatDetail extends Component {
+  state = {};
+
   componentWillReceiveProps(nextProps) {
     console.log("Feat detail got props");
     if (
@@ -52,6 +55,8 @@ class FeatDetail extends Component {
     );
   }
 
+  handleContextRef = stickyContext => this.setState({ stickyContext });
+
   render() {
     const feat = this.props.feats.get(this.props.match.params.name) || {
       name: "",
@@ -61,20 +66,34 @@ class FeatDetail extends Component {
       successors: []
     };
 
+    const contextRef = this.state.stickyContext;
+
     return (
-      <div>
-        <h2>{feat.name}</h2>
-        <h3>Requires</h3>
-        <p>{feat.prerequisites || "None"}</p>
-        <h3>Description</h3>
-        <p>{feat.description}</p>
-        <h3>Benefit</h3>
-        <p>{feat.benefit}</p>
-        <Successors
-          pending={this.props.successorsPending}
-          successors={this.props.successors}
-        />
-      </div>
+      <Container text>
+        <div ref={this.handleContextRef}>
+          <Rail internal position="left">
+            <Sticky context={contextRef} offset={10}>
+              <Button
+                icon="search"
+                size="large"
+                circular
+                onClick={this.props.toggleSidebar}
+              />
+            </Sticky>
+          </Rail>
+          <h2>{feat.name}</h2>
+          <h3>Requires</h3>
+          <p>{feat.prerequisites || "None"}</p>
+          <h3>Description</h3>
+          <p>{feat.description}</p>
+          <h3>Benefit</h3>
+          <p>{feat.benefit}</p>
+          <Successors
+            pending={this.props.successorsPending}
+            successors={this.props.successors}
+          />
+        </div>
+      </Container>
     );
   }
 }
@@ -89,7 +108,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getSuccessors: id => dispatch(getSuccessorFeats(id))
+    getSuccessors: id => dispatch(getSuccessorFeats(id)),
+    toggleSidebar: () => dispatch({ type: SIDEBAR })
   };
 };
 
