@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Map } from "immutable";
 import { removeSpecialChars } from "../utils/string.js";
-import { Segment, Label, List } from "semantic-ui-react";
+import { Header, Segment, Label, List } from "semantic-ui-react";
 
 const Item = ({ active, feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
@@ -45,20 +45,55 @@ const ResultList = ({ results, selected, input, handleClick }) => {
   const items = results
     .valueSeq()
     .filter(f => f.name.match(re))
-    .toArray()
-    .slice(0, 101)
-    .map(r => (
-      <Item
-        active={selected && selected === r.key}
-        key={r.id}
-        feat={r}
-        handleClick={handleClick}
-      />
-    ));
+    .toArray();
+
+  const ftypes = [
+    "General",
+    "Combat",
+    "Item Creation",
+    "Metamagic",
+    "Monster",
+    "Monster, Combat",
+    "Grit",
+    "Achievement",
+    "Story",
+    "Mythic",
+    "Familiar",
+    "Item Mastery",
+    "Combat, Monster",
+    "Combat, Meditation",
+    "Meditation",
+    "Combat Feat",
+    "Combat, style",
+    "Combat, Teamwork"
+  ];
+
+  const newListEntry = r => (
+    <Item
+      active={selected && selected === r.key}
+      key={r.id}
+      feat={r}
+      handleClick={handleClick}
+    />
+  );
+
+  const categoryList = ftypes.reduce((list, t) => {
+    const sublist = items.filter(i => i.type == t).map(i => newListEntry(i));
+
+    return sublist.length > 0
+      ? [...list, <List.Header as={Header} key={t} content={t} />, ...sublist]
+      : list;
+  }, []);
 
   return (
     <List divided selection>
-      {items}
+      {input ? (
+        categoryList
+      ) : (
+        <List.Item
+          content={<em>Start typing a feat name to see results.</em>}
+        />
+      )}
     </List>
   );
 };

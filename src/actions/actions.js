@@ -70,7 +70,6 @@ export function inputText(content) {
 
 export function selectFeat({ key, id }) {
   return dispatch => {
-    dispatch(getSuccessorFeats(id));
     dispatch(push("/feat/" + key));
   };
 }

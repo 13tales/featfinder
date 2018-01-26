@@ -1,5 +1,14 @@
 import React, { PureComponent as Component } from "react";
-import { Rail, Sticky, Button, Container, Segment } from "semantic-ui-react";
+import {
+  List,
+  Dimmer,
+  Loader,
+  Rail,
+  Sticky,
+  Button,
+  Container,
+  Segment
+} from "semantic-ui-react";
 import { Route, Link, withRouter } from "react-router-dom";
 import { SIDEBAR, getSuccessorFeats } from "../actions/actions.js";
 import { connect } from "react-redux";
@@ -8,45 +17,36 @@ import { push } from "react-router-redux";
 import { PageSpinner } from "../components/spinner.js";
 
 const Successors = ({ pending, successors }) => {
-  const content = pending ? (
-    <PageSpinner size="lg" />
-  ) : successors.length !== 0 ? (
-    <ul>
-      {successors.map(s => (
-        <li key={s}>
-          <Link to={`/feat/${removeSpecialChars(s)}`}>{s}</Link>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>
-      <em>None</em>
-    </p>
-  );
+  const empty = successors.length > 0;
   return (
     <div>
       <h3>Required by</h3>
-      {content}
+      <List bulleted={empty}>
+        <Loader active={pending} />
+        {empty ? (
+          successors.map(s => (
+            <List.Item>
+              <Link to={`/feat/${removeSpecialChars(s)}`}>{s}</Link>
+            </List.Item>
+          ))
+        ) : (
+          <List.Item content={<em>None</em>} />
+        )}
+      </List>
     </div>
   );
 };
 
 class FeatDetail extends Component {
   state = {};
-
   componentWillReceiveProps(nextProps) {
-    console.log("Feat detail got props");
-    if (
-      this.props.match.params.name !== nextProps.match.params.name &&
-      this.props.successors.length === 0
-    )
+    if (this.props.match.params.name !== nextProps.match.params.name)
       return this.props.getSuccessors(
         this.props.feats.get(nextProps.match.params.name).id
       );
   }
 
   componentDidMount() {
-    console.log("Feat detail mounted");
     return (
       this.props.match.params.name &&
       this.props.getSuccessors(
@@ -77,6 +77,8 @@ class FeatDetail extends Component {
                 icon="search"
                 size="large"
                 circular
+                positive
+                basic
                 onClick={this.props.toggleSidebar}
               />
             </Sticky>

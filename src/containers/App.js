@@ -25,6 +25,7 @@ import {
 import { Route } from "react-router-dom";
 import { push } from "react-router-redux";
 import { PageSpinner } from "../components/spinner.js";
+import { default as FFSidebar } from "../components/sidebar.js";
 
 class App extends Component {
   componentDidMount() {
@@ -36,34 +37,7 @@ class App extends Component {
       <div style={{ height: "100%", maxHeight: "100%" }}>
         {this.props.pending.feats === false ? (
           <Sidebar.Pushable>
-            <Sidebar
-              as={Segment}
-              visible={this.props.ui.showSidebar}
-              animation="overlay"
-            >
-              <SearchBox
-                handleInput={this.props.handleInput}
-                input={this.props.input}
-                toggleOptions={this.props.toggleSearchOptions}
-              />
-              {this.props.pending.feats === true ? (
-                <PageSpinner size="6x" />
-              ) : (
-                <Segment style={{ maxHeight: "100%", overflowY: "scroll" }}>
-                  <Route
-                    path="/feat/:name"
-                    children={({ match }) => (
-                      <ResultList
-                        selected={match && match.params.name}
-                        results={this.props.results}
-                        input={this.props.input}
-                        handleClick={this.props.handleFeatClick}
-                      />
-                    )}
-                  />
-                </Segment>
-              )}
-            </Sidebar>
+            <FFSidebar />
             <Sidebar.Pusher
               onClick={() => {
                 this.props.ui.showSidebar && this.props.toggleSidebar();
