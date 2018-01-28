@@ -6,18 +6,6 @@ import { Header, Segment, Label, List } from "semantic-ui-react";
 
 const Item = ({ active, feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
-  let labelColor = "";
-  switch (feat.type) {
-    case "Combat":
-      labelColor = "red";
-      break;
-    case "General":
-      labelColor = "teal";
-      break;
-    default:
-      labelColor = "blue";
-      break;
-  }
 
   return (
     <List.Item
@@ -27,15 +15,14 @@ const Item = ({ active, feat, history, handleClick }) => {
       }}
       active={active}
     >
-      <List.Header>
-        {feat.name + " "}
-        <Label color={labelColor} style={{ marginLeft: "1ex" }}>
-          {feat.type}
-        </Label>
-      </List.Header>
-      <List.Description>
-        <em>{benefitSnippet}</em>
-      </List.Description>
+      <List.Content>
+        <List.Header as={Header} sub>
+          {feat.name + " "}
+        </List.Header>
+        <List.Description>
+          <em>{benefitSnippet}</em>
+        </List.Description>
+      </List.Content>
     </List.Item>
   );
 };
@@ -78,15 +65,22 @@ const ResultList = ({ results, selected, input, handleClick }) => {
   );
 
   const categoryList = ftypes.reduce((list, t) => {
-    const sublist = items.filter(i => i.type == t).map(i => newListEntry(i));
+    const sublist = items
+      .filter(i => i.type == t)
+      .slice(0, 100)
+      .map(i => newListEntry(i));
 
     return sublist.length > 0
-      ? [...list, <List.Header as={Header} key={t} content={t} />, ...sublist]
+      ? [
+          ...list,
+          <List.Item key={t} icon="book" header={t} as={Header} />,
+          ...sublist
+        ]
       : list;
   }, []);
 
   return (
-    <List divided selection>
+    <List divided relaxed selection>
       {input ? (
         categoryList
       ) : (

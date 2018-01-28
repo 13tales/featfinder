@@ -68,9 +68,9 @@ export function inputText(content) {
   return { type: INPUT_TEXT, content };
 }
 
-export function selectFeat({ key, id }) {
-  return dispatch => {
-    dispatch(push("/feat/" + key));
+export function selectFeat({ key, name }) {
+  return (dispatch, getState) => {
+    dispatch(push({ pathname: `/feat/${key}`, state: { historyIdx: 0 } }));
   };
 }
 
@@ -89,5 +89,20 @@ export function getSuccessorFeats(featId) {
     });
 
     return dispatch(pending({ featSuccessors: false }));
+  };
+}
+
+export function gotoConnectedFeat(current, next) {
+  return (dispatch, getState) => {
+    const historyIdx = getState().history.length;
+    dispatch(push({ pathname: `/feat/${next}`, state: { historyIdx } }));
+  };
+}
+
+export function historyBack(idx, featKey) {
+  return (dispatch, getState) => {
+    dispatch(
+      push({ pathname: `/feat/${featKey}`, state: { historyIdx: idx } })
+    );
   };
 }
