@@ -1,5 +1,6 @@
 import React, { PureComponent as Component } from "react";
 import {
+  Tab,
   Button,
   Sticky,
   Rail,
@@ -22,24 +23,17 @@ import {
   SIDEBAR
 } from "../actions/actions.js";
 
-const ffSidebar = ({
+const SearchTab = ({
   pending,
-  visible,
-  input,
   feats,
+  input,
   handleFeatClick,
-  handleInput,
-  toggleSidebar
+  toggleSidebar,
+  handleInput
 }) => (
-  <Sidebar width="wide" as={Segment} visible={visible} animation="overlay">
+  <div>
     <SearchBox handleInput={handleInput} input={input} />
-    <Button
-      icon="chevron left"
-      circular
-      basic
-      floated="right"
-      onClick={toggleSidebar}
-    />
+
     {pending.feats === true ? (
       <PageSpinner size="6x" />
     ) : (
@@ -57,15 +51,75 @@ const ffSidebar = ({
         />
       </Segment>
     )}
-  </Sidebar>
+  </div>
 );
+
+const ffSidebar = ({
+  pending,
+  visible,
+  input,
+  feats,
+  handleFeatClick,
+  handleInput,
+  toggleSidebar,
+  bookmarks
+}) => {
+  const panes = [
+    {
+      menuItem: "Search",
+      render: () => (
+        <Tab.Pane>
+          <SearchTab
+            pending={pending}
+            feats={feats}
+            input={input}
+            handleFeatClick={handleFeatClick}
+            toggleSidebar={toggleSidebar}
+            handleInput={handleInput}
+          />
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: "Bookmarks",
+      render: () => (
+        <Tab.Pane>
+          <Route
+            path="/feat/:name"
+            children={({ match }) => (
+              <ResultList
+                selected={match && match.params.name}
+                results={bookmarks.map(k => feats.get(k)).toMap()}
+                input={"."}
+                handleClick={handleFeatClick}
+              />
+            )}
+          />
+        </Tab.Pane>
+      )
+    }
+  ];
+  return (
+    <Sidebar width="wide" as={Segment} visible={visible} animation="overlay">
+      <Button
+        icon="chevron left"
+        circular
+        basic
+        floated="right"
+        onClick={toggleSidebar}
+      />
+      <Tab panes={panes} />
+    </Sidebar>
+  );
+};
 
 const mapStateToProps = state => {
   return {
     visible: state.uiState.showSidebar,
     input: state.search,
     feats: state.feats,
-    pending: state.actionPending
+    pending: state.actionPending,
+    bookmarks: state.bookmarks
   };
 };
 

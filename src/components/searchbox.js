@@ -10,6 +10,7 @@ let SearchBox = ({ handleInput, input, toggleOptions }) => {
       onChange={e => {
         return handleInput(e.target.value);
       }}
+      fluid
     />
   );
 };

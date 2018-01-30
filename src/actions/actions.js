@@ -12,6 +12,8 @@ export const FETCH_FEATS = "FETCH_FEATS ";
 export const SEARCH_OPTIONS = "SEARCH_OPTIONS ";
 export const SUCCESSORS_DIRTY = "SUCCESSORS_DIRTY";
 export const SIDEBAR = "SIDEBAR";
+export const BOOKMARK_FEAT = "BOOKMARK_FEAT";
+export const REMOVE_BOOKMARK = "REMOVE_BOOKMARK";
 
 export function pending(dataElement) {
   return {
@@ -105,4 +107,12 @@ export function historyBack(idx, featKey) {
       push({ pathname: `/feat/${featKey}`, state: { historyIdx: idx } })
     );
   };
+}
+
+export function addBookmark(featKey) {
+  return { type: BOOKMARK_FEAT, featKey };
+}
+
+export function removeBookmark(featKey) {
+  return { type: REMOVE_BOOKMARK, featKey };
 }

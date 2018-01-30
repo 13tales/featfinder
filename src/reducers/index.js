@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { search, successorFeats, feats } from "./feats.js";
+import { search, successorFeats, feats, bookmarks } from "./feats.js";
 import { actionPending } from "./async.js";
 import { dbConnected } from "./dbConnected.js";
 import { uiState } from "./ui.js";
@@ -14,7 +14,8 @@ const reducer = combineReducers({
   feats,
   uiState,
   router: routerReducer,
-  history
+  history,
+  bookmarks
 });
 
 export default reducer;

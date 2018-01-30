@@ -1,5 +1,7 @@
 import React, { PureComponent as Component } from "react";
 import {
+  Icon,
+  Popup,
   Header,
   Breadcrumb,
   List,
@@ -17,7 +19,9 @@ import {
   gotoConnectedFeat,
   SIDEBAR,
   getSuccessorFeats,
-  selectFeat
+  selectFeat,
+  addBookmark,
+  removeBookmark
 } from "../actions/actions.js";
 import { connect } from "react-redux";
 import { removeSpecialChars } from "../utils/string.js";
@@ -82,6 +86,13 @@ class FeatDetail extends Component {
     };
 
     const contextRef = this.state.stickyContext;
+    const featIsBookmarked = this.props.bookmarks.has(feat.key);
+    const addBookmarkIcon = (
+      <Icon.Group>
+        <Icon name="remove bookmark" />
+        <Icon corner name="add" />
+      </Icon.Group>
+    );
 
     return (
       <Container text>
@@ -89,7 +100,7 @@ class FeatDetail extends Component {
           <Rail internal position="left">
             <Sticky context={contextRef} offset={10}>
               <Button
-                icon="search"
+                icon="bars"
                 size="large"
                 circular
                 positive
@@ -98,7 +109,30 @@ class FeatDetail extends Component {
               />
             </Sticky>
           </Rail>
-          <h2>{feat.name}</h2>
+          <h2>
+            {feat.name}
+            <Popup
+              trigger={
+                <Button
+                  style={{ marginLeft: "2em" }}
+                  basic
+                  circular
+                  icon={featIsBookmarked ? "bookmark" : addBookmarkIcon}
+                  active={featIsBookmarked}
+                  size="large"
+                  onClick={() => {
+                    (featIsBookmarked && this.props.removeBookmark(feat.key)) ||
+                      this.props.addBookmark(feat.key);
+                  }}
+                />
+              }
+              content={
+                featIsBookmarked
+                  ? "Remove from bookmarks"
+                  : "Bookmark this feat"
+              }
+            />
+          </h2>
           {this.props.history.length > 1 && (
             <Breadcrumb>
               {this.props.history
@@ -146,7 +180,8 @@ const mapStateToProps = state => {
     feats: state.feats,
     successorsPending: state.actionPending.featSuccessors,
     successors: state.successorFeats,
-    history: state.history
+    history: state.history,
+    bookmarks: state.bookmarks
   };
 };
 
@@ -157,7 +192,9 @@ const mapDispatchToProps = dispatch => {
     gotoConnectedFeat: (current, next) =>
       dispatch(gotoConnectedFeat(current, next)),
     goBackInHistory: (historyIdx, featKey) =>
-      dispatch(historyBack(historyIdx, featKey))
+      dispatch(historyBack(historyIdx, featKey)),
+    addBookmark: featKey => dispatch(addBookmark(featKey)),
+    removeBookmark: featKey => dispatch(removeBookmark(featKey))
   };
 };
 
