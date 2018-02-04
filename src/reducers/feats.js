@@ -4,18 +4,16 @@ import {
   SUCCESSOR_FEATS,
   FETCH_FEATS,
   BOOKMARK_FEAT,
-  REMOVE_BOOKMARK
+  REMOVE_BOOKMARK,
+  SEARCH_OPTIONS,
+  SEARCH_SUBSET,
+  DO_SEARCH
 } from "../actions/actions.js";
 import { Map } from "immutable";
 import { removeSpecialChars } from "../utils/string.js";
 import { OrderedSet } from "immutable";
 
-export function search(state = "", action) {
-  return action.type === INPUT_TEXT ? action.content : state;
-}
-
-export function feats(state = Map(), action) {
-  console.log(action);
+export function featCache(state = Map(), action) {
   return action.type === FETCH_FEATS
     ? action.results.records
         .map(r => r.toObject().f.properties)
@@ -46,4 +44,16 @@ export function bookmarks(state = OrderedSet(), action) {
     default:
       return state;
   }
+}
+
+export function searchOption(state = "all", action) {
+  return action.type === SEARCH_OPTIONS ? action.option : state;
+}
+
+export function searchSubset(state = OrderedSet(), action) {
+  return action.type === SEARCH_SUBSET ? action.results : state;
+}
+
+export function searchResults(state = [], action) {
+  return action.type === DO_SEARCH ? action.items : state;
 }

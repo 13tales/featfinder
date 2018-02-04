@@ -1,6 +1,7 @@
 import * as neo4j from "neo4j-driver/lib/browser/neo4j-web.min.js";
 import * as api from "../api/api.js";
 import { push } from "react-router-redux";
+import { removeSpecialChars } from "../utils/string.js";
 
 export const INPUT_TEXT = "INPUT_TEXT";
 export const CONNECT_DB = "CONNECT_DB";
@@ -14,6 +15,8 @@ export const SUCCESSORS_DIRTY = "SUCCESSORS_DIRTY";
 export const SIDEBAR = "SIDEBAR";
 export const BOOKMARK_FEAT = "BOOKMARK_FEAT";
 export const REMOVE_BOOKMARK = "REMOVE_BOOKMARK";
+export const SEARCH_SUBSET = "SEARCH_SUBSET";
+export const DO_SEARCH = "DO_SEARCH ";
 
 export function pending(dataElement) {
   return {
@@ -52,6 +55,40 @@ export function initDB() {
   };
 }
 
+export function defineSearchSubset(option) {
+  return async (dispatch, getState) => {
+    dispatch(pending({ searchSubset: true }));
+
+    const db = getState().dbConnected.session;
+
+    let results = [];
+
+    switch (option) {
+      case "zero_reqs":
+        results = await api.getZeroReqFeatNames(db);
+        break;
+      case "no_req_feats":
+        results = await api.getNoFeatReqFeatNames(db);
+        break;
+      case "bookmarked":
+        const cache = getState().featCache;
+        const bookmarkedIds = getState()
+          .bookmarks.map(k => cache.get(k).id)
+          .toArray();
+        results = await api.getReqBookmarkedFeatNames(db, bookmarkedIds);
+        break;
+      default:
+        results = getState()
+          .featCache.valueSeq()
+          .toArray()
+          .map(f => f.name);
+    }
+    dispatch({ type: SEARCH_SUBSET, results });
+
+    return dispatch(pending({ searchSubset: false }));
+  };
+}
+
 export function getFeats() {
   return async (dispatch, getState) => {
     dispatch(pending({ feats: true }));
@@ -62,12 +99,11 @@ export function getFeats() {
 
     dispatch({ type: FETCH_FEATS, results });
 
+    getState().actionPending.searchSubset &&
+      dispatch(defineSearchSubset(getState().searchOption));
+
     return dispatch(pending({ feats: false }));
   };
-}
-
-export function inputText(content) {
-  return { type: INPUT_TEXT, content };
 }
 
 export function selectFeat({ key, name }) {
@@ -82,7 +118,6 @@ export function getSuccessorFeats(featId) {
 
     const db = getState().dbConnected.session;
 
-    console.log("Trying to get successors for:", featId);
     const results = await api.getSuccessors(db, featId);
 
     dispatch({
@@ -115,4 +150,24 @@ export function addBookmark(featKey) {
 
 export function removeBookmark(featKey) {
   return { type: REMOVE_BOOKMARK, featKey };
+}
+
+export function selectSearchOption(option) {
+  return (dispatch, getState) => {
+    dispatch(defineSearchSubset(option));
+    dispatch({ type: SEARCH_OPTIONS, option });
+  };
+}
+
+export function searchFeats(input) {
+  return (dispatch, getState) => {
+    dispatch(pending({ searchResults: true }));
+    const re = new RegExp(input, "i");
+    const items = getState()
+      .searchSubset.filter(f => f.match(re))
+      .map(f => getState().featCache.get(removeSpecialChars(f)));
+
+    dispatch({ type: DO_SEARCH, items });
+    dispatch(pending({ searchResults: false }));
+  };
 }

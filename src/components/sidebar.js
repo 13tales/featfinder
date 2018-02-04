@@ -13,56 +13,33 @@ import {
 import { SearchBox } from "../components/searchbox.js";
 import { ResultList } from "../components/resultlist.js";
 import { PageSpinner } from "../components/spinner.js";
+import { default as SearchTab } from "../components/searchPane.js";
 import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 import {
-  inputText,
+  searchFeats,
   initApp,
   SEARCH_OPTIONS,
   selectFeat,
-  SIDEBAR
+  SIDEBAR,
+  selectSearchOption,
+  pending
 } from "../actions/actions.js";
-
-const SearchTab = ({
-  pending,
-  feats,
-  input,
-  handleFeatClick,
-  toggleSidebar,
-  handleInput
-}) => (
-  <div>
-    <SearchBox handleInput={handleInput} input={input} />
-
-    {pending.feats === true ? (
-      <PageSpinner size="6x" />
-    ) : (
-      <Segment style={{ maxHeight: "97%", overflowY: "scroll" }}>
-        <Route
-          path="/feat/:name"
-          children={({ match }) => (
-            <ResultList
-              selected={match && match.params.name}
-              results={feats}
-              input={input}
-              handleClick={handleFeatClick}
-            />
-          )}
-        />
-      </Segment>
-    )}
-  </div>
-);
 
 const ffSidebar = ({
   pending,
   visible,
   input,
-  feats,
+  subset,
+  cache,
   handleFeatClick,
   handleInput,
   toggleSidebar,
-  bookmarks
+  bookmarks,
+  options,
+  setOption,
+  results,
+  setSearchPending
 }) => {
   const panes = [
     {
@@ -71,11 +48,16 @@ const ffSidebar = ({
         <Tab.Pane>
           <SearchTab
             pending={pending}
-            feats={feats}
+            subset={subset}
+            cache={cache}
             input={input}
             handleFeatClick={handleFeatClick}
             toggleSidebar={toggleSidebar}
             handleInput={handleInput}
+            searchOption={options}
+            handleSelectOption={setOption}
+            results={results}
+            setSearchPending={setSearchPending}
           />
         </Tab.Pane>
       )
@@ -89,7 +71,7 @@ const ffSidebar = ({
             children={({ match }) => (
               <ResultList
                 selected={match && match.params.name}
-                results={bookmarks.map(k => feats.get(k)).toMap()}
+                subset={bookmarks.map(k => cache.get(k)).toArray()}
                 input={"."}
                 handleClick={handleFeatClick}
               />
@@ -117,9 +99,12 @@ const mapStateToProps = state => {
   return {
     visible: state.uiState.showSidebar,
     input: state.search,
-    feats: state.feats,
+    subset: state.searchSubset,
     pending: state.actionPending,
-    bookmarks: state.bookmarks
+    bookmarks: state.bookmarks,
+    options: state.searchOption,
+    cache: state.featCache,
+    results: state.searchResults
   };
 };
 
@@ -127,12 +112,14 @@ const mapDispatchToProps = dispatch => {
   return {
     toggleSidebar: () => dispatch({ type: SIDEBAR }),
     handleInput: input => {
-      dispatch(inputText(input));
+      dispatch(searchFeats(input));
     },
     handleFeatClick: key => {
       dispatch(selectFeat(key));
       dispatch({ type: SIDEBAR });
-    }
+    },
+    setSearchPending: () => dispatch(pending({ searchResults: true })),
+    setOption: option => dispatch(selectSearchOption(option))
   };
 };
 

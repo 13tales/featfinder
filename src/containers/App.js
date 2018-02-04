@@ -16,7 +16,6 @@ import { TabNav } from "../components/tabbed_nav.js";
 import { SearchOptions } from "../components/searchOptions.js";
 import { connect } from "react-redux";
 import {
-  inputText,
   initApp,
   SEARCH_OPTIONS,
   selectFeat,
@@ -72,9 +71,6 @@ const mapStateToProps = state => {
 // This function accepts the dispatch function, and returns a callback to be passed to components.
 const mapDispatchToProps = dispatch => {
   return {
-    handleInput: input => {
-      dispatch(inputText(input));
-    },
     initApp: () => {
       dispatch(initApp());
     },

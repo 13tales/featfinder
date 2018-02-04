@@ -60,7 +60,7 @@ class FeatDetail extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.name !== nextProps.match.params.name)
       return this.props.getSuccessors(
-        this.props.feats.get(nextProps.match.params.name).id
+        this.props.cache.get(nextProps.match.params.name).id
       );
   }
 
@@ -68,7 +68,7 @@ class FeatDetail extends Component {
     return (
       this.props.match.params.name &&
       this.props.getSuccessors(
-        this.props.feats.get(this.props.match.params.name).id
+        this.props.cache.get(this.props.match.params.name).id
       )
     );
   }
@@ -76,7 +76,7 @@ class FeatDetail extends Component {
   handleContextRef = stickyContext => this.setState({ stickyContext });
 
   render() {
-    const feat = this.props.feats.get(this.props.match.params.name) || {
+    const feat = this.props.cache.get(this.props.match.params.name) || {
       name: "",
       prerequisites: "",
       description: "",
@@ -138,7 +138,7 @@ class FeatDetail extends Component {
               {this.props.history
                 .slice(0, -1)
                 .reduce((collection, current, currentIndex) => {
-                  const feat = this.props.feats.get(current);
+                  const feat = this.props.cache.get(current);
                   return [
                     ...collection,
                     <Breadcrumb.Section
@@ -177,7 +177,7 @@ class FeatDetail extends Component {
 
 const mapStateToProps = state => {
   return {
-    feats: state.feats,
+    cache: state.featCache,
     successorsPending: state.actionPending.featSuccessors,
     successors: state.successorFeats,
     history: state.history,

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Map } from "immutable";
 import { removeSpecialChars } from "../utils/string.js";
-import { Header, Segment, Label, List } from "semantic-ui-react";
+import { Icon, Header, Segment, Label, List } from "semantic-ui-react";
 
 const Item = ({ active, feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
@@ -27,13 +27,7 @@ const Item = ({ active, feat, history, handleClick }) => {
   );
 };
 
-const ResultList = ({ results, selected, input, handleClick }) => {
-  const re = new RegExp(input, "i");
-  const items = results
-    .valueSeq()
-    .filter(f => f.name.match(re))
-    .toArray();
-
+const ResultList = ({ subset, selected, handleClick, cache }) => {
   const ftypes = [
     "General",
     "Combat",
@@ -55,33 +49,37 @@ const ResultList = ({ results, selected, input, handleClick }) => {
     "Combat, Teamwork"
   ];
 
-  const newListEntry = r => (
+  const newListEntry = (r, category) => (
     <Item
       active={selected && selected === r.key}
-      key={r.id}
+      key={r.id + category}
       feat={r}
       handleClick={handleClick}
     />
   );
 
   const categoryList = ftypes.reduce((list, t) => {
-    const sublist = items
-      .filter(i => i.type == t)
-      .slice(0, 100)
-      .map(i => newListEntry(i));
+    const sublist = subset.filter(i => i.type == t);
 
-    return sublist.length > 0
+    const displayed = sublist.slice(0, 100).map(i => newListEntry(i, t));
+
+    const count = sublist.length;
+
+    return count > 0
       ? [
           ...list,
-          <List.Item key={t} icon="book" header={t} as={Header} />,
-          ...sublist
+          <List.Header as={Header} icon="book">
+            {t}
+            <Label circular content={count > 100 ? "100+" : count} />
+          </List.Header>,
+          ...displayed
         ]
       : list;
   }, []);
 
   return (
     <List divided relaxed selection>
-      {input ? (
+      {subset.length > 0 ? (
         categoryList
       ) : (
         <List.Item
