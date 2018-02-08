@@ -2,7 +2,16 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Map } from "immutable";
 import { removeSpecialChars } from "../utils/string.js";
-import { Icon, Header, Segment, Label, List } from "semantic-ui-react";
+import {
+  Accordion,
+  Message,
+  Icon,
+  Header,
+  Segment,
+  Label,
+  List
+} from "semantic-ui-react";
+import { default as CategorySublist } from "./categorySubList.js";
 
 const Item = ({ active, feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
@@ -68,25 +77,19 @@ const ResultList = ({ subset, selected, handleClick, cache }) => {
     return count > 0
       ? [
           ...list,
-          <List.Header as={Header} icon="book">
-            {t}
-            <Label circular content={count > 100 ? "100+" : count} />
-          </List.Header>,
-          ...displayed
+          <CategorySublist featList={displayed} count={count} featType={t} />
         ]
       : list;
   }, []);
 
   return (
-    <List divided relaxed selection>
+    <Accordion exclusive={false}>
       {subset.length > 0 ? (
         categoryList
       ) : (
-        <List.Item
-          content={<em>Start typing a feat name to see results.</em>}
-        />
+        <Message content={<em>Start typing a feat name to see results.</em>} />
       )}
-    </List>
+    </Accordion>
   );
 };
 
