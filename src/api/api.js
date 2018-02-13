@@ -45,3 +45,13 @@ export async function getReqBookmarkedFeatNames(db, bookmarks) {
 
   return results.records.map(r => r.toObject().name);
 }
+
+export async function expandSuccessors(db, id) {
+  const results = await db.run(
+    `match (f :Feat)<-[:REQUIRES*..]-(o :Feat) where f.id = $id
+    return distinct o.name as name`,
+    { id }
+  );
+
+  return results.records.map(r => r.toObject().name);
+}
