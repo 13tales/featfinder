@@ -65,6 +65,8 @@ class FeatDetail extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props.match.params.name);
+    console.log(this.props.cache.get(this.props.match.params.name).id);
     return (
       this.props.match.params.name &&
       this.props.getSuccessors(

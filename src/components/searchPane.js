@@ -66,6 +66,7 @@ const SearchTab = ({
               subset={results}
               handleClick={handleFeatClick}
               cache={cache}
+              emptyMessage="To see search results, begin typing a word or phrase."
             />
           )}
         />

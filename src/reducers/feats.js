@@ -15,12 +15,11 @@ import { OrderedSet } from "immutable";
 
 export function featCache(state = Map(), action) {
   return action.type === FETCH_FEATS
-    ? action.results.records
-        .map(r => r.toObject().f.properties)
-        .reduce((out, f) => {
-          let key = removeSpecialChars(f.name);
-          return out.set(key, { ...f, key: key });
-        }, Map())
+    ? action.results.records.map(r => r.toObject().f).reduce((out, f) => {
+        let key = removeSpecialChars(f.name);
+        debugger;
+        return out.set(key, { ...f, key: key });
+      }, Map())
     : state;
 }
 

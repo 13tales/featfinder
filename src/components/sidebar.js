@@ -74,6 +74,7 @@ const ffSidebar = ({
                 subset={bookmarks.map(k => cache.get(k)).toArray()}
                 input={"."}
                 handleClick={handleFeatClick}
+                emptyMessage="You haven't bookmarked any feats yet."
               />
             )}
           />

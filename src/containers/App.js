@@ -25,6 +25,7 @@ import { Route } from "react-router-dom";
 import { push } from "react-router-redux";
 import { PageSpinner } from "../components/spinner.js";
 import { default as FFSidebar } from "../components/sidebar.js";
+import { default as Home } from "../components/home.jsx";
 
 class App extends Component {
   componentDidMount() {
@@ -43,11 +44,8 @@ class App extends Component {
               }}
               style={{ height: "100%", overflowY: "scroll" }}
             >
-              <Route
-                path="/feat/:name"
-                feats={this.props.results}
-                component={FeatDetail}
-              />
+              <Route path="/" exact={true} component={Home} />
+              <Route path="/feat/:name" component={FeatDetail} />
             </Sidebar.Pusher>
           </Sidebar.Pushable>
         ) : (

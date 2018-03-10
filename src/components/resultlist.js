@@ -13,7 +13,7 @@ import {
 } from "semantic-ui-react";
 import { default as CategorySublist } from "./categorySubList.js";
 
-const Item = ({ active, feat, history, handleClick }) => {
+export const Item = ({ active, feat, history, handleClick }) => {
   let benefitSnippet = feat.benefit.split(".")[0];
 
   return (
@@ -36,7 +36,7 @@ const Item = ({ active, feat, history, handleClick }) => {
   );
 };
 
-const ResultList = ({ subset, selected, handleClick, cache }) => {
+const ResultList = ({ subset, selected, handleClick, cache, emptyMessage }) => {
   const ftypes = [
     "General",
     "Combat",
@@ -87,7 +87,7 @@ const ResultList = ({ subset, selected, handleClick, cache }) => {
       {subset.length > 0 ? (
         categoryList
       ) : (
-        <Message content={<em>Start typing a feat name to see results.</em>} />
+        <Message content={<em>{emptyMessage}</em>} />
       )}
     </Accordion>
   );

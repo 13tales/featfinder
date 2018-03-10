@@ -1,7 +1,9 @@
 export async function fetchAll(db) {
   const results = await db.run(
     `match (f :Feat)
-       return f`
+     with f
+     match (successor :Feat)-[:REQUIRES]->(f)-[:REQUIRES]->(req :Feat)
+    return f { .*, req_count: toString( count(req) ), succ_count: toString( count(successor) )}`
   );
 
   return results;
@@ -49,7 +51,11 @@ export async function getReqBookmarkedFeatNames(db, bookmarks) {
 export async function expandSuccessors(db, id) {
   const results = await db.run(
     `match (f :Feat)<-[:REQUIRES*..]-(o :Feat) where f.id = $id
-    return distinct o.name as name`,
+    return distinct o.name as namematch (f :Feat {name: "Combat Reflexes"})
+    with f
+    call apoc.path.expand(f, "<REQUIRES", "+Feat", 2,6)
+    yield path as pp
+    return head(pp)`,
     { id }
   );
 
