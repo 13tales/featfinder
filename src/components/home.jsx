@@ -45,7 +45,7 @@ const FeatRow = ({ feat, handleSelect }) => (
     key={feat.id}
     verticalAlign="top"
     onClick={() => {
-      handleSelect(feat.key);
+      handleSelect({ key: feat.key });
     }}
   >
     <Table.Cell>
@@ -53,8 +53,8 @@ const FeatRow = ({ feat, handleSelect }) => (
       <p>{`${feat.description.split(".")[0]}…`}</p>
     </Table.Cell>
     <Table.Cell content={`${feat.benefit.split(".")[0]}…`} />
-    <Table.Cell content={feat.reqs} />
-    <Table.Cell content={feat.succs} />
+    <Table.Cell content={feat.req_count} />
+    <Table.Cell content={feat.succ_count} />
     <Table.Cell content="blah" />
   </Table.Row>
 );

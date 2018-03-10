@@ -2,7 +2,7 @@ export async function fetchAll(db) {
   const results = await db.run(
     `match (f :Feat)
      with f
-     match (successor :Feat)-[:REQUIRES]->(f)-[:REQUIRES]->(req :Feat)
+     optional match (successor :Feat)-[:REQUIRES]->(f)-[:REQUIRES]->(req :Feat)
     return f { .*, req_count: toString( count(req) ), succ_count: toString( count(successor) )}`
   );
 
