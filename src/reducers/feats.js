@@ -17,7 +17,12 @@ export function featCache(state = Map(), action) {
   return action.type === FETCH_FEATS
     ? action.results.records.map(r => r.toObject().f).reduce((out, f) => {
         let key = removeSpecialChars(f.name);
-        return out.set(key, { ...f, key: key });
+        return out.set(key, {
+          ...f,
+          key: key,
+          req_count: Number.parseInt(f.req_count),
+          succ_count: Number.parseInt(f.succ_count)
+        });
       }, Map())
     : state;
 }

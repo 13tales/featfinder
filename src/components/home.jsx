@@ -1,76 +1,68 @@
 import React, { PureComponent as Component } from "react";
-import { Table, Container, Header, Segment, List } from "semantic-ui-react";
+import { Grid, Pagination } from "semantic-ui-react";
 import { connect } from "react-redux";
-import { selectFeat } from "../actions/actions.js";
-import { Item } from "../components/resultlist.js";
+import { ConnectedFeatTable } from "../components/featTable.jsx";
 
-class Home extends Component {
+class HomePage extends Component {
   constructor(props) {
     super(props);
-    this.state = { page: 0 };
+    this.state = { sortColumn: "name", direction: "ascending", activePage: 1 };
+    this.handleSort = this.handleSort.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+  }
+
+  handleSort(clickedColumn) {
+    if (this.state.sortColumn !== clickedColumn) {
+      this.setState({
+        sortColumn: clickedColumn,
+        direction: "ascending"
+      });
+    } else {
+      this.setState({
+        direction:
+          this.state.direction === "ascending" ? "descending" : "ascending"
+      });
+    }
+  }
+
+  handlePageChange(e, { activePage }) {
+    this.setState({ activePage });
   }
 
   render() {
     return (
-      <Container>
-        <Header content="Feats, old and new!" />
-        <Segment>
-          <Table padded selectable>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell width={4}>Feat</Table.HeaderCell>
-                <Table.HeaderCell width={5}>Benefit</Table.HeaderCell>
-                <Table.HeaderCell>Pre-requisite count</Table.HeaderCell>
-                <Table.HeaderCell>Successor count</Table.HeaderCell>
-                <Table.HeaderCell>Feat 'level'</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {this.props.featCache
-                .valueSeq()
-                .slice(0, 100)
-                .map(f => (
-                  <FeatRow feat={f} handleSelect={this.props.handleFeatClick} />
-                ))}
-            </Table.Body>
-          </Table>
-        </Segment>
-      </Container>
+      <Grid container>
+        <Grid.Row centered>
+          <Pagination
+            activePage={this.state.activePage}
+            totalPages={Math.ceil(this.props.feats.count() / 50)}
+            onPageChange={this.handlePageChange}
+          />
+        </Grid.Row>
+        <Grid.Row>
+          <ConnectedFeatTable
+            sortColumn={this.state.sortColumn}
+            handleSort={this.handleSort}
+            sortDirection={this.state.direction}
+            page={this.state.activePage}
+          />
+        </Grid.Row>
+      </Grid>
     );
   }
 }
 
-const FeatRow = ({ feat, handleSelect }) => (
-  <Table.Row
-    key={feat.id}
-    verticalAlign="top"
-    onClick={() => {
-      handleSelect({ key: feat.key });
-    }}
-  >
-    <Table.Cell>
-      <Header as="h5" content={feat.name} />
-      <p>{`${feat.description.split(".")[0]}…`}</p>
-    </Table.Cell>
-    <Table.Cell content={`${feat.benefit.split(".")[0]}…`} />
-    <Table.Cell content={feat.req_count} />
-    <Table.Cell content={feat.succ_count} />
-    <Table.Cell content="blah" />
-  </Table.Row>
-);
-
 const mapStateToProps = state => {
   return {
-    featCache: state.featCache
+    feats: state.featCache
   };
 };
-
-const mapDispatchToProps = dispatch => {
-  return {
-    handleFeatClick: key => dispatch(selectFeat(key))
-  };
+const mapDispatchToProps = () => {
+  return {};
 };
 
-const ConnectedHome = connect(mapStateToProps, mapDispatchToProps)(Home);
+const ConnectedHomePage = connect(mapStateToProps, mapDispatchToProps)(
+  HomePage
+);
 
-export default ConnectedHome;
+export default ConnectedHomePage;
